@@ -1,24 +1,29 @@
+import os
+import time
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
-import time
 
-# AES Benchmark
-key = b'\x00' * 16  # 128-bit key
-iv = b'\x00' * 16   # Initialization vector
-data = b"Sample plaintext" * 1024  # 16 KB data
+# Function to benchmark AES-CBC encryption
+def benchmark_aes_cbc(data_size_kb, key_size_bits=128):
+    # Generate random data
+    data = os.urandom(data_size_kb * 1024)
+    key = os.urandom(key_size_bits // 8)
+    iv = os.urandom(16)  # 16 bytes for AES-CBC
 
-# Encryption
-start_time = time.time()
-cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
-encryptor = cipher.encryptor()
-ciphertext = encryptor.update(data) + encryptor.finalize()
-encryption_time = time.time() - start_time
+    # Initialize AES-CBC cipher
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+    encryptor = cipher.encryptor()
 
-# Decryption
-start_time = time.time()
-decryptor = cipher.decryptor()
-plaintext = decryptor.update(ciphertext) + decryptor.finalize()
-decryption_time = time.time() - start_time
+    # Benchmark encryption
+    start_time = time.perf_counter()
+    ciphertext = encryptor.update(data) + encryptor.finalize()  # noqa: F841
+    end_time = time.perf_counter()
 
-print(f"AES Encryption Time: {encryption_time:.6f}s")
-print(f"AES Decryption Time: {decryption_time:.6f}s")
+    # Results
+    encryption_time = end_time - start_time
+    print(f"Encryption Time: {encryption_time:.6f} seconds")
+    return encryption_time
+
+# Run the benchmark with 16KB of data
+data_size_kb = 16
+benchmark_aes_cbc(data_size_kb)
