@@ -50,7 +50,7 @@ def read_file(file_path):
 if __name__ == "__main__":
     # Generate a random 32-byte key for ChaCha20
     key = os.urandom(32)
-    nonce = os.urandom(8)  # ChaCha20 requires a 8-byte nonce
+    nonce = os.urandom(16)  # ChaCha20 requires a 16-byte nonce
 
     # Get file input from user
     file_path = input("Enter the full path to the file (e.g., C:\\Users\\acer\\Downloads\\10MBrandomfile.txt): ").strip()
